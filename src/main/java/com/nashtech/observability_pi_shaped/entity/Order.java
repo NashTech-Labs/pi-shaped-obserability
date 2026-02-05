@@ -5,11 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Orders")
+@Table(name = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,16 +24,17 @@ public class Order {
 
     private String itemName;
 
-    private double price;
+    private BigDecimal price;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public Order(String itemName, double price, String status) {
+    public Order(String itemName, BigDecimal price, OrderStatus status) {
         this.itemName = itemName;
         this.price = price;
         this.status = status;
-        this.createdAt = LocalDateTime.now();
     }
 }

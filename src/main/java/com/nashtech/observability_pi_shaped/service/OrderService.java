@@ -1,12 +1,14 @@
 package com.nashtech.observability_pi_shaped.service;
 
 import com.nashtech.observability_pi_shaped.dto.CreateOrderRequest;
+import com.nashtech.observability_pi_shaped.dto.CreateOrderResponse;
 import com.nashtech.observability_pi_shaped.entity.Order;
+import com.nashtech.observability_pi_shaped.entity.OrderStatus;
 import com.nashtech.observability_pi_shaped.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -17,22 +19,37 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public Order createOrder(CreateOrderRequest request) {
-
+    public CreateOrderResponse createOrder(CreateOrderRequest request) {
         Order order = new Order(
                 request.getItemName(),
                 request.getPrice(),
-                "CREATED"
+                OrderStatus.CREATED
         );
-
-        return orderRepository.save(order);
+        Order saved = orderRepository.save(order);
+        return mapToResponse(saved);
     }
 
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<CreateOrderResponse> getAllOrders() {
+        return orderRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Order> getOrderbyId(Long orderId) {
-        return orderRepository.findById(orderId);
+    public CreateOrderResponse getOrderById(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() ->
+                        new RuntimeException("Order not found with id: " + orderId));
+        return mapToResponse(order);
+    }
+
+    private CreateOrderResponse mapToResponse(Order saved) {
+        return new CreateOrderResponse(
+                saved.getId(),
+                saved.getItemName(),
+                saved.getPrice(),
+                saved.getStatus().name(),
+                saved.getCreatedAt()
+        );
     }
 }
