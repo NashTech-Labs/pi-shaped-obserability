@@ -1,4 +1,4 @@
-package com.nashtech.observability_pi_shaped;
+package com.nashtech.observability_pi_shaped.integration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("postgres")
-public class DatabaseConnectionTest {
+public class DatabaseConnectionIT {
 
     @Autowired
     private DataSource dataSource;
